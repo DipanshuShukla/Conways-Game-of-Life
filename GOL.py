@@ -12,9 +12,14 @@ class gameofLife(tk.Canvas):
 		self.Height = height
 		self.Width = width
 		self.GRID = None
+
+		self.speed = 100
+		
 		
 		self.border = 20
-		self.scale = 30
+		self.scale = 38
+
+		self.shape_Grid = [[None for i in range(self.scale)] for j in range(self.scale)]
 
 		self.draw_space_width = self.Height-2*(self.Height/self.border)
 
@@ -24,7 +29,7 @@ class gameofLife(tk.Canvas):
 		
 		self.Create_New_Grid(self.Height, self.Width)
 
-		self.speed = 1000
+
 		self.after(self.speed, self.update_next)
 
 	def Create_New_Grid(self, height, width):
@@ -40,7 +45,7 @@ class gameofLife(tk.Canvas):
 	def draw_Grid(self):
 		for i in range(self.scale):
 			for j in range(self.scale):
-				self.create_rectangle(self.Width/self.border + i*self.cell_width, self.Height/self.border + j*self.cell_width, self.Width/self.border + (i+1)*self.cell_width, self.Height/self.border + (j+1)*self.cell_width, fill="black" if self.GRID[i][j] else "white",outline="white" if self.GRID[i][j] else "black", tag="cells")
+				self.shape_Grid[i][j] = self.create_rectangle(self.Width/self.border + i*self.cell_width, self.Height/self.border + j*self.cell_width, self.Width/self.border + (i+1)*self.cell_width, self.Height/self.border + (j+1)*self.cell_width, fill="black" if self.GRID[i][j] else "white",outline="white" if self.GRID[i][j] else "black", tag="cells")
 		self.create_rectangle(self.Width/self.border, self.Height/self.border, self.Width/self.border + self.draw_space_width, self.Height/self.border + self.draw_space_width, width=3)
 
 	def get_next_state(self,i,j):
@@ -48,7 +53,7 @@ class gameofLife(tk.Canvas):
 
 		for a in range(-1,2):
 			for b in range(-1,2):
-				if i+a > 0 and i+a < self.scale and j+b > 0 and j+b < self.scale and not (a==0 and b==0):
+				if i+a >= 0 and i+a < self.scale and j+b >= 0 and j+b < self.scale and not (a==0 and b==0):
 					live_neighbours = live_neighbours + self.GRID[a+i][b+j]
 
 		if self.GRID[i][j]:
@@ -77,8 +82,15 @@ class gameofLife(tk.Canvas):
 			for i in self.GRID:
 				print(i)
 
+	def update_screen(self):
+		for i in range(self.scale):
+			for j in range(self.scale):
+				self.itemconfig(self.shape_Grid[i][j], fill="black" if self.GRID[i][j] else "white",outline="white" if self.GRID[i][j] else "black")
+				#self.itemconfig(self.shape_Grid[i][j], outline="white" if self.GRID[i][j] else "black")
+
 	def update_next(self):
 		self.next_instance()
+		self.update_screen()
 		self.after(self.speed, self.update_next)
 
 
